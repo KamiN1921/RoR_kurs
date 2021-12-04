@@ -1,6 +1,6 @@
 class Station
-  attr_reader :trains
   attr_reader :name
+  attr_reader :trains
   def initialize(name)
     @trains=[]
     @name = name
@@ -14,9 +14,14 @@ class Station
 
   end
   def get_trains_by_type (type)
-    if Train.types.key?(type) || Train.types.value?(type)
+    case type
+    when "passenger"
+      @trains.find_all{ |train| train.is_a? PassengerTrain}
+    when "cargo"
+      @trains.find_all{ |train| train.is_a? == CargoTrain}
+    else
+      puts "Undefined type"
     end
-    @trains.find_all{ |train| train.type == type}
   end
 
   def train_departure(number)
