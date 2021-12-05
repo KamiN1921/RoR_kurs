@@ -18,7 +18,7 @@ class Station
     when "passenger"
       @trains.find_all{ |train| train.is_a? PassengerTrain}
     when "cargo"
-      @trains.find_all{ |train| train.is_a? == CargoTrain}
+      @trains.find_all{ |train| train.is_a? CargoTrain}
     else
       puts "Undefined type"
     end

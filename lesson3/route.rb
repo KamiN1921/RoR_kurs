@@ -4,6 +4,12 @@ class Route
     @stations=[]
     @stations<<first_station<<last_station
   end
+  def first_station
+    @stations.first
+  end
+  def last_station
+    @stations.last
+  end
   def add_station(station,pos=-2)
     if pos == 0
       pos = 1

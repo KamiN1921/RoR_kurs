@@ -1,28 +1,19 @@
 class Train
-  protected #все методы будут унаследованы для дочерних классов, но работать напрямую с классом "поезд" мы не будем
-  attr_reader :velocity #для работы со скоростью у нас есть методы
-  def initialize(number) #  внутренний механизм но наследуется
-    @current_station = 0
-    @number = number.to_s
-    @velocity =0
-    @cars = []
-  end
+
+  protected #все методы будут унаследованы для дочерних классов, но работать напрямую с ними мы не будем
   attr_reader :number #нужный для окружающих параметр
-  def accelerate #внешний интерфейс, будет использоаться в дочернем классе
-    @velocity+=1
+
+  def pop_train_car #будет вызываться напрямую
+    @cars.pop unless @cars.empty?
   end
 
-  def stop #внешний интерфейс, будет использоаться в дочернем классе
-    @velocity = 0
-  end
-
-  def take_route(route) #внешний интерфейс, будет использоаться в дочернем классе
+  def take_route(route) #внешний интерфейс, будет использоваться пользователями
     @route = route
     @route.stations.first.train_arrival(self)
     @current_station = 1
   end
 
-  def next_station #внешний интерфейс, будет использоаться в дочернем классе
+  def next_station #внешний интерфейс, будет использоваться пользователями
     if @route.nil?
       puts "No route! We can't!"
     elsif @route.stations.length <= @current_station
@@ -34,7 +25,7 @@ class Train
     end
   end
 
-  def prev_station #внешний интерфейс, будет использоаться в дочернем классе
+  def prev_station #внешний интерфейс, будет использоваться пользователями
     if @route.nil?
       puts "No route! We can't!"
     elsif @current_station == 0 || @current_station == 1
@@ -46,7 +37,23 @@ class Train
     end
   end
 
-  def pop_train_car
-    @cars.pop
+  def stopped? #внешний интерфейс, будет использоваться пользователями
+    @velocity==0
+  end
+
+  attr_reader :velocity #для работы со скоростью у нас есть методы
+  def initialize(number) #  внутренний механизм
+    @current_station = 0
+    @number = number.to_s
+    @velocity =0
+    @cars = []
+  end
+
+  def accelerate #будет использоаться в дочернем классе
+    @velocity+=1
+  end
+
+  def stop # будет использоаться в дочернем классе
+    @velocity = 0
   end
 end
