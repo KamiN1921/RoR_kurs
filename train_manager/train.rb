@@ -35,9 +35,10 @@ class Train
     @velocity==0
   end
 
+  protected #все методы будут унаследованы для дочерних классов, но работать напрямую с ними мы не будем
+
   def add_car
   end
-  protected #все методы будут унаследованы для дочерних классов, но работать напрямую с ними мы не будем
 
   def initialize(number,count_of_cars) #  внутренний механизм
     @current_station_index = -1
