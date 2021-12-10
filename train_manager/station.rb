@@ -1,10 +1,13 @@
+
 class Station
   attr_reader :name
   attr_reader :trains
-
+  include InstanceCounter
+  @@all_stations =[]
   def initialize(name)
     @trains=[]
     @name = name
+    @@all_stations+=self
   end
   def train_arrival (train)
       @trains << train
@@ -23,5 +26,10 @@ class Station
   def train_departure(number)
     @trains.delete_if{|train| train.number == number}
   end
+
+  def self.all
+    @@all_stations
+  end
+
 
 end

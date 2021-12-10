@@ -1,10 +1,16 @@
 class Train
+  include Manufacturer
 
   attr_reader :number
   attr_reader :TYPE
   attr_reader :velocity
   attr_reader :route
   attr_reader :current_station_index
+  @@all_trains = []
+
+  def self.find(number)
+    @@all_trains.find{|train| train.number == number}
+  end
 
   def count_of_cars
     @cars.length
@@ -45,9 +51,11 @@ class Train
     @number = number.to_s
     @velocity = 0
     @cars = []
+    register_instance
     while @cars.length<count_of_cars
       add_car
     end
+    @@all_trains.push(self)
   end
 
   def accelerate(speed) #будет использоаться в дочернем классе

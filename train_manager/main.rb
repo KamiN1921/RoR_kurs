@@ -1,5 +1,6 @@
 $LOAD_PATH.push('/Users/dchaenkova/RubymineProjects/RoR_kurs/train_manager/')
-
+require 'instance_counter'
+require 'manufacturer'
 require 'station'
 require 'route'
 require 'train'
@@ -8,6 +9,7 @@ require 'cargo_train'
 require 'passenger_train'
 require 'passenger_train_car'
 require 'cargo_train_car'
+
 
 class Interface
   def initialize
@@ -66,9 +68,7 @@ class Interface
   end
 
   def is_here?(train,station)
-    puts "This station already has this train" unless station.trains.find_all { |element|
-      element.number == train.number
-    }.empty?
+    puts "This station already has this train" unless station.trains.find(train.number)
   end
 
   def new_train
@@ -307,8 +307,4 @@ end
 puts "Приветствуем Вас в менеджере железной дороги"
 program = Interface.new
 program.menu
-
-
-
-
 
