@@ -7,7 +7,7 @@ class Station
   def initialize(name)
     @trains=[]
     @name = name
-    @@all_stations+=self
+    @@all_stations<<self
   end
   def train_arrival (train)
       @trains << train

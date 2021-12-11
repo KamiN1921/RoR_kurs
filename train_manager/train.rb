@@ -55,7 +55,7 @@ class Train
     while @cars.length<count_of_cars
       add_car
     end
-    @@all_trains.push(self)
+    @@all_trains<<self
   end
 
   def accelerate(speed) #будет использоаться в дочернем классе
