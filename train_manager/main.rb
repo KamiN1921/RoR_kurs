@@ -40,7 +40,19 @@ class Interface
     else false
     end
   end
+  def demonstration
+    puts"Введите название компании производителя для поезда"
+    company = gets.chomp.to_str
+    puts "Введите номер поезда, которому хотите добавить производителя"
+    number = gets.chomp
+    train = Train.find(number)
+    unless train.nil?
+      train.company = company
+      puts "Поезду номер #{train.number} установлен производитель #{train.company}"
+    end
 
+    puts "Количество созданных грузовых поездов - #{CargoTrain.instances}"
+  end
   def print_station_trains(station,type)
     case type
     when "cargo"
@@ -267,7 +279,8 @@ class Interface
       puts " - Для отцепления вагона от поезда введите 6"
       puts " - Для начала перемещения по маршруту нажмите 7"
       puts " - Для начала просмотра списка поездов на станции нажмите 8"
-      puts " - Exit 9"
+      puts " - Для демонстрации работы модулей введите 9"
+      puts " - Exit 10"
       @command = gets.chomp
       case @command
       when "1"
@@ -291,6 +304,8 @@ class Interface
       when "8"
         list_trains
       when "9"
+        demonstration
+      when "10"
         break
       else puts "Неверная комманда"
       end
