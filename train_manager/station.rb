@@ -4,13 +4,15 @@ class Station
   attr_reader :trains
   include InstanceCounter
   @@all_stations =[]
+
   def initialize(name)
     @trains=[]
     @name = name
     @@all_stations<<self
   end
+
   def train_arrival (train)
-      @trains << train
+    @trains << train
   end
 
   def get_trains_by_type (type)

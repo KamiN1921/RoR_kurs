@@ -40,6 +40,7 @@ class Interface
     else false
     end
   end
+
   def demonstration
     puts"Введите название компании производителя для поезда"
     company = gets.chomp.to_str
@@ -53,23 +54,24 @@ class Interface
 
     puts "Количество созданных грузовых поездов - #{CargoTrain.instances}"
   end
+
   def print_station_trains(station,type)
     case type
-    when "cargo"
-      puts "Грузовые поезда станции #{@stations[station-1].name}"
-      @stations[station - 1].get_trains_by_type("cargo").each do |train|
-        puts "#{train.TYPE} поезд номер #{ train.number }"
-      end
-    when "passenger"
-      puts "Пассажирские поезда станции #{@stations[station-1].name}"
-      @stations[station - 1].get_trains_by_type("passenger").each do |train|
-        puts "#{train.TYPE} поезд номер #{ train.number }"
-      end
-    else
-    puts "Все поезда станции #{@stations[station-1].name}"
-    @stations[station - 1].trains.each do |train|
-      puts "#{train.TYPE} поезд номер #{ train.number }"
-    end
+      when "cargo"
+        puts "Грузовые поезда станции #{@stations[station-1].name}"
+        @stations[station - 1].get_trains_by_type("cargo").each do |train|
+          puts "#{train.TYPE} поезд номер #{ train.number }"
+        end
+      when "passenger"
+        puts "Пассажирские поезда станции #{@stations[station-1].name}"
+        @stations[station - 1].get_trains_by_type("passenger").each do |train|
+          puts "#{train.TYPE} поезд номер #{ train.number }"
+        end
+      else
+        puts "Все поезда станции #{@stations[station-1].name}"
+        @stations[station - 1].trains.each do |train|
+          puts "#{train.TYPE} поезд номер #{ train.number }"
+        end
     end
   end
 
@@ -116,6 +118,32 @@ class Interface
     end
   end
 
+  def delete_station_from_route
+    puts "Введите название станции"
+    print_stations
+    name = gets.chomp
+    if @routes[route-1].first_station.name == name || @routes[route-1].last_station.name == name
+      puts "We can't delete first or last station from route"
+    else
+      @routes[route-1].del_station(name)
+    end
+  end
+
+  def add_station_in_route
+    puts "Введите номер станции"
+    print_stations
+    station = gets.chomp.to_i
+    unless bad_number?(station,@stations)&&@routes[route-1].stations.find_all{|x| x.name == @stations[station-1].name}.empty?
+      puts "Введите порядковый номер новой станции в маршруте"
+      pos = gets.chomp.to_i
+      if pos == 0
+        @routes[route-1].add_station(@stations[station - 1])
+      elsif pos == -1 || pos >= @routes[route-1].stations.length - 1
+        pos = -2
+      end
+      @routes[route-1].add_station(@stations[station - 1],pos - 1)
+  end
+
   def edit_route
     if @routes.empty?
       puts "Нет маршрутов для редактирования. Создайте хотя бы один маршрут"
@@ -129,27 +157,9 @@ class Interface
         puts "Если вы хотите удалить станцию из маршрута введите 1 и 2 если добавить"
         action = gets.chomp.to_i
         if action == 1
-          puts "Введите название станции"
-          print_stations
-          name = gets.chomp
-          if @routes[route-1].first_station.name == name || @routes[route-1].last_station.name == name
-            puts "We can't delete first or last station from route"
-          else
-          @routes[route-1].del_station(name)
-          end
+          delete_station_from_route
         elsif action == 2
-          puts "Введите номер станции"
-          print_stations
-          station = gets.chomp.to_i
-          unless bad_number?(station,@stations)&&@routes[route-1].stations.find_all{|x| x.name == @stations[station-1].name}.empty?
-            puts "Введите порядковый номер новой станции в маршруте"
-            pos = gets.chomp.to_i
-            if pos == 0
-              @routes[route-1].add_station(@stations[station - 1])
-            elsif pos == -1 || pos >= @routes[route-1].stations.length - 1
-              pos = -2
-            end
-            @routes[route-1].add_station(@stations[station - 1],pos - 1)
+          add_station_in_route
           end
         end
       end
@@ -191,7 +201,7 @@ class Interface
       puts "Введите порядковый номер поезда"
       print_trains
       train = gets.chomp.to_i
-      @trains[train-1].add_car unless bad_number?(train,@trains)
+      @trains[train-1].add_cargo unless bad_number?(train,@trains)
     end
   end
 
@@ -226,13 +236,13 @@ class Interface
        if bad_number?(station,@stations)
          puts "Неверный номер станции"
        else
-      puts "Введите all для вывода всех поездов станции"
-      puts "Введите cargo для вывода грузовых поездов станции"
-      puts "Введите passenger для вывода пассажирских поездов станции"
-      chose = gets.chomp.to_str
-      print_station_trains(station,chose)
+         puts "Введите all для вывода всех поездов станции"
+         puts "Введите cargo для вывода грузовых поездов станции"
+         puts "Введите passenger для вывода пассажирских поездов станции"
+         chose = gets.chomp.to_str
+         print_station_trains(station,chose)
        end
-      end
+    end
   end
 
   def prev_st(train)
@@ -262,25 +272,29 @@ class Interface
           next_st(@trains[train-1])
         elsif direction<0
           prev_st(@trains[train-1])
-          else break
+        else break
         end
       end
     end
     end
   end
 
+  def hello_message
+    puts " - Для создания станции введите 1"
+    puts " - Для создания поезда введите 2"
+    puts " - Для работы с маршрутом(создание/редактирование) введите 3"
+    puts " - Для назначения маршрута поеду введите 4"
+    puts " - Для добавления вагона к поезду введите 5"
+    puts " - Для отцепления вагона от поезда введите 6"
+    puts " - Для начала перемещения по маршруту нажмите 7"
+    puts " - Для начала просмотра списка поездов на станции нажмите 8"
+    puts " - Для демонстрации работы модулей введите 9"
+    puts " - Exit 10"
+  end
+
   def menu
     loop do
-      puts " - Для создания станции введите 1"
-      puts " - Для создания поезда введите 2"
-      puts " - Для работы с маршрутом(создание/редактирование) введите 3"
-      puts " - Для назначения маршрута поеду введите 4"
-      puts " - Для добавления вагона к поезду введите 5"
-      puts " - Для отцепления вагона от поезда введите 6"
-      puts " - Для начала перемещения по маршруту нажмите 7"
-      puts " - Для начала просмотра списка поездов на станции нажмите 8"
-      puts " - Для демонстрации работы модулей введите 9"
-      puts " - Exit 10"
+      hello_message
       @command = gets.chomp
       case @command
       when "1"
@@ -312,12 +326,6 @@ class Interface
     end
   end
 end
-
-
-
-
-
-
 
 puts "Приветствуем Вас в менеджере железной дороги"
 program = Interface.new
