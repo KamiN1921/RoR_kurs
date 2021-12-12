@@ -201,7 +201,7 @@ class Interface
       puts "Введите порядковый номер поезда"
       print_trains
       train = gets.chomp.to_i
-      @trains[train-1].add_cargo unless bad_number?(train,@trains)
+      @trains[train-1].add_train_car unless bad_number?(train,@trains)
     end
   end
 

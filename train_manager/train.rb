@@ -44,7 +44,7 @@ class Train
 
   protected #все методы будут унаследованы для дочерних классов, но работать напрямую с ними мы не будем
 
-  def add_cargo
+  def add_train_car
   end
 
   def initialize(number,count_of_cars) #  внутренний механизм
@@ -54,7 +54,7 @@ class Train
     @cars = []
     register_instance
     while @cars.length<count_of_cars
-      add_cargo
+      add_train_car
     end
     @@all_trains<<self
   end
