@@ -86,7 +86,7 @@ class Interface
   end
 
   def new_train
-    puts "Введите номер поезда"
+    puts "Введите номер поезда (в формате ХХХ-ХХ или ХХХХХ, где Х - буква или цифра)"
     name = gets.chomp.to_str
     puts "Укажите необходимый тип поезда ('грузовой' или 'пассажирский')"
     type = gets.chomp
@@ -96,45 +96,47 @@ class Interface
       @trains.push(CargoTrain.new(name,count))
     elsif type == "пассажирский"
       @trains.push(PassengerTrain.new(name,count))
-    else
-      puts "Неверный тип. Вы будете перемещеы в меню"
+    else raise "Неверный тип"
     end
+    begin
+    rescue StandardError => e
+      puts e.message
+      retry
+    rescue NoMethodError
+      puts "Неизвестная ошибка, объект не создан"
+      retry
+    end
+    puts "Создан #{@trains.last.TYPE} поезд номер #{@trains.last.number} с #{@trains.last.cars.length} вагонов"
   end
 
   def new_route
-    if @stations.length >=2
+    raise "Недостаточно станций для составления маршрута.
+           Вернитесь в меню и создайте минимум 2 станции" unless @stations.length >=2
       print_stations
       puts "Введите порядковый номер 1ой станции маршрута"
       first = gets.chomp.to_i
       puts "Введите порядковый номер 2ой станции маршрута"
       second = gets.chomp.to_i
-      if bad_number?(first,@stations) || bad_number?(second,@stations)
-        puts "Неверный порядковый номер станции"
-      else
-        @routes.push(Route.new(@stations[first-1],@stations[second-1]))
-      end
-    else
-      puts "Недостаточно станций для составления маршрута. Вернитесь в меню и создайте минимум 2 станции"
-    end
+    raise "Неверный порядковый номер станции" if bad_number?(first, @stations) || bad_number?(second, @stations)
+    @routes.push(Route.new(@stations[first-1],@stations[second-1]))
   end
 
   def delete_station_from_route
     puts "Введите название станции"
     print_stations
     name = gets.chomp
-    if @routes[route-1].first_station.name == name || @routes[route-1].last_station.name == name
-      puts "We can't delete first or last station from route"
-    else
+    raise "We can't delete first or last station from route" if @routes[route-1].first_station.name == name||
+    @routes[route-1].last_station.name == name
       @routes[route-1].del_station(name)
-    end
   end
 
   def add_station_in_route
     puts "Введите номер станции"
     print_stations
     station = gets.chomp.to_i
-    unless bad_number?(station,@stations)&&@routes[route-1].stations.find_all{|x| x.name == @stations[station-1].name}.empty?
-      puts "Введите порядковый номер новой станции в маршруте"
+    raise "Введите порядковый номер новой станции в маршруте" unless bad_number?(station,@stations)&&
+      @routes[route-1].stations.find_all{|x| x.name == @stations[station-1].name}.empty?
+      puts
       pos = gets.chomp.to_i
       if pos == 0
         @routes[route-1].add_station(@stations[station - 1])
@@ -145,24 +147,17 @@ class Interface
   end
 
   def edit_route
-    if @routes.empty?
-      puts "Нет маршрутов для редактирования. Создайте хотя бы один маршрут"
-    else
+    raise "Нет маршрутов для редактирования. Создайте хотя бы один маршрут" if @routes.empty?
       print_routes
       puts "Введите порядковый номер маршрута"
       route = gets.chomp.to_i
-      if bad_number?(route,@routes)
-        puts "Маршрут с таким номером отсутствует"
-      else
-        puts "Если вы хотите удалить станцию из маршрута введите 1 и 2 если добавить"
-        action = gets.chomp.to_i
-        if action == 1
-          delete_station_from_route
-        elsif action == 2
-          add_station_in_route
-          end
-        end
-      end
+    raise "Маршрут с таким номером отсутствует" if bad_number?(route,@routes)
+    puts "Если вы хотите удалить станцию из маршрута введите 1 и 2 если добавить"
+    action = gets.chomp.to_i
+    if action == 1
+      delete_station_from_route
+    elsif action == 2
+      add_station_in_route
     end
   end
 
@@ -173,9 +168,17 @@ class Interface
     chose = gets.chomp
     case chose
     when "1"
-      new_route
+      begin
+        new_route
+      rescue StandardError => e
+        puts e.message
+      end
     when "2"
+      begin
       edit_route
+      rescue StandardError => e
+      puts e.message
+    end
     else puts "Вы возвращены в главное меню"
     end
   end
@@ -187,95 +190,72 @@ class Interface
     puts "Введите порядковый номер маршрута в списке"
     print_routes
     route = gets.chomp.to_i
-    if bad_number?(train,@trains)|| bad_number?(route,@routes)
-      puts "Неверно задана пара поезд - маршрут. Попробуйте еще раз."
-    else
+    raise "Неверно задана пара поезд - маршрут. Попробуйте еще раз." if (bad_number?(train,@trains)||
+      bad_number?(route,@routes))
       @trains[train-1].take_route(@routes[route-1])
     end
-  end
 
   def add_cars_to_train
-    if @trains.empty?
-      puts "Создайте хоть один поезд"
-    else
-      puts "Введите порядковый номер поезда"
-      print_trains
-      train = gets.chomp.to_i
-      @trains[train-1].add_train_car unless bad_number?(train,@trains)
-    end
+    raise "Создайте хоть один поезд" if @trains.empty?
+    puts "Введите порядковый номер поезда"
+    print_trains
+    train = gets.chomp.to_i
+    raise "Выход за границы массива" if bad_number?(train,@trains)
+    @trains[train-1].add_train_car
   end
 
   def pop_cars_from_train
-    if @trains.empty?
-      puts "Создайте хоть один поезд"
-    else
-      puts "Введите порядковый номер поезда"
-      print_trains
-      train = gets.chomp.to_i
-      @trains[train-1].pop_train_car unless bad_number?(train,@trains)
-    end
+    raise "Создайте хоть один поезд"if @trains.empty?
+    puts "Введите порядковый номер поезда"
+    print_trains
+    train = gets.chomp.to_i
+    @trains[train-1].pop_train_car unless bad_number?(train,@trains)
   end
 
   def next_st(train)
-    if train.route.nil?
-      puts "Не назначен маршрут, мой капитан!"
-    elsif train.route.stations.length <= train.current_station_index+1
-      puts "Это конечная, назначьте новый маршрут"
-    else
+    raise "Не назначен маршрут, мой капитан!" if train.route.nil?
+    raise "Это конечная, назначьте новый маршрут" if train.route.stations.length <= train.current_station_index+1
       train.next_station
-    end
   end
 
   def list_trains
-    if @trains.empty?|| @stations.empty?
-      puts "Создайте хоть один поезд и хоть одну станцию"
-    else
+    raise "Создайте хоть один поезд и хоть одну станцию" if @trains.empty?|| @stations.empty?
       puts "Выберите станцию для просмотра всех поездов на ней"
       print_stations
       station = gets.chomp.to_i
-       if bad_number?(station,@stations)
-         puts "Неверный номер станции"
-       else
-         puts "Введите all для вывода всех поездов станции"
-         puts "Введите cargo для вывода грузовых поездов станции"
-         puts "Введите passenger для вывода пассажирских поездов станции"
-         chose = gets.chomp.to_str
-         print_station_trains(station,chose)
-       end
-    end
+    raise "Неверный номер станции" if bad_number?(station,@stations)
+    puts "Введите all для вывода всех поездов станции"
+    puts "Введите cargo для вывода грузовых поездов станции"
+    puts "Введите passenger для вывода пассажирских поездов станции"
+    chose = gets.chomp.to_str
+    print_station_trains(station,chose)
   end
 
   def prev_st(train)
-    if train.route.nil?
-      puts "Не назначен маршрут, мой капитан!"
-    elsif train.current_station_index == 0
-      puts "Ни шагу назад, это первая станция маршрута!"
-    else
+    raise "Не назначен маршрут, мой капитан!" if train.route.nil?
+    raise "Ни шагу назад, это первая станция маршрута!" if train.current_station_index == 0
       train.prev_station
-    end
   end
 
   def start_moving
     loop do
-    if @trains.empty?||@routes.empty?
-      puts "Создайте хоть один поезд и один маршрут"
-    else
+      raise "Создайте хоть один поезд и один маршрут" if @trains.empty?||@routes.empty?
       puts "Введите порядковый номер поезда"
       print_trains
       train = gets.chomp.to_i
-      if bad_number?(train,@trains)
-        puts "Неверный порядковый номер поезда"
-      else
-        puts "Выберете направление (положительное число - одна станция вперед, 0 - прекратить движение и вернуться в меню, и отрицательное - станция назад)"
-        direction = gets.chomp.to_i
-        if direction > 0
-          next_st(@trains[train-1])
-        elsif direction<0
-          prev_st(@trains[train-1])
-        else break
-        end
+      raise "Неверный порядковый номер поезда" if bad_number?(train,@trains)
+      puts "Выберете направление (положительное число - одна станция вперед, 0 - прекратить движение и вернуться в меню, и отрицательное - станция назад)"
+      direction = gets.chomp.to_i
+      begin
+      if direction > 0
+        next_st(@trains[train-1])
+      elsif direction<0
+        prev_st(@trains[train-1])
+      else break
       end
-    end
+      rescue StandardError => e
+        raise "#{e.message}"
+      end
     end
   end
 
@@ -304,19 +284,37 @@ class Interface
       when "3"
         route_manage
       when "4"
-        if @routes.empty? || @trains.empty?
-          puts "Невозможно назначить маршрут поезду. создайте хотябы один поезд и один маршрут"
-        else
-          give_route
+        begin
+        raise puts "Невозможно назначить маршрут поезду. создайте хотябы один поезд и один маршрут" if @routes.empty? || @trains.empty?
+        give_route
+        rescue StandardError => e
+          puts e.message
+          retry
         end
       when "5"
+        begin
         add_cars_to_train
+        rescue StandardError => e
+          puts e.message
+        end
       when "6"
+        begin
         pop_cars_from_train
+        rescue StandardError => e
+          puts e.message
+        end
       when "7"
+        begin
         start_moving
+        rescue StandardError => e
+          puts e.message
+        end
       when "8"
+        begin
         list_trains
+        rescue StandardError => e
+          puts e.message
+        end
       when "9"
         demonstration
       when "10"
