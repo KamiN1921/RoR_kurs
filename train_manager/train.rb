@@ -64,7 +64,7 @@ class Train
       add_train_car
     end
     begin
-    self.valid?
+    valid?
     rescue StandardError=>e
       raise "Некорректно заданый объект: #{e.message}"
     else

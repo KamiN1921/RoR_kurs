@@ -5,9 +5,14 @@ class Station
   include InstanceCounter
   @@all_stations =[]
 
+  def valid?
+    !name.nil?
+  end
+
   def initialize(name)
     @trains=[]
     @name = name
+    raise "Неверное имя" unless valid?
     @@all_stations<<self
   end
 

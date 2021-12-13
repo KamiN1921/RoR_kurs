@@ -2,9 +2,14 @@ class Route
   attr_reader :stations
   include InstanceCounter
 
+  def valid?
+   @stations.first.name!=@stations.last.name && @stations.length==2
+  end
+
   def initialize(first_station,last_station)
     @stations=[]
     @stations<<first_station<<last_station
+    raise "Для создания маршрута нужны две различные станции" if !valid?
   end
 
   def first_station

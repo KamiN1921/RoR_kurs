@@ -79,6 +79,9 @@ class Interface
     puts "Введите название станции"
     name = gets.chomp
     @stations.push(Station.new("#{name}"))
+  rescue StandardError => e
+    puts e.message
+    retry
   end
 
   def is_here?(train,station)
@@ -106,37 +109,36 @@ class Interface
       puts "Неизвестная ошибка, объект не создан"
       retry
     end
-    puts "Создан #{@trains.last.TYPE} поезд номер #{@trains.last.number} с #{@trains.last.cars.length} вагонов"
+    puts "Создан #{@trains.last.TYPE} поезд номер #{@trains.last.number} #{@trains.last.count_of_cars} вагонов"
   end
 
   def new_route
-    raise "Недостаточно станций для составления маршрута.
-           Вернитесь в меню и создайте минимум 2 станции" unless @stations.length >=2
+    begin
       print_stations
       puts "Введите порядковый номер 1ой станции маршрута"
       first = gets.chomp.to_i
       puts "Введите порядковый номер 2ой станции маршрута"
       second = gets.chomp.to_i
     raise "Неверный порядковый номер станции" if bad_number?(first, @stations) || bad_number?(second, @stations)
+      rescue StandardError => e
+    raise e.message
+    end
     @routes.push(Route.new(@stations[first-1],@stations[second-1]))
   end
 
-  def delete_station_from_route
+  def delete_station_from_route(route)
     puts "Введите название станции"
     print_stations
     name = gets.chomp
-    raise "We can't delete first or last station from route" if @routes[route-1].first_station.name == name||
-    @routes[route-1].last_station.name == name
-      @routes[route-1].del_station(name)
+    raise "We can't delete first or last station from route" if @routes[route-1].first_station.name == name||@routes[route-1].last_station.name == name
+    @routes[route-1].del_station(name)
   end
 
-  def add_station_in_route
+  def add_station_in_route(route)
     puts "Введите номер станции"
     print_stations
     station = gets.chomp.to_i
-    raise "Введите порядковый номер новой станции в маршруте" unless bad_number?(station,@stations)&&
-      @routes[route-1].stations.find_all{|x| x.name == @stations[station-1].name}.empty?
-      puts
+    raise "Введите порядковый номер новой станции в маршруте" unless bad_number?(station,@stations)&&@routes[route-1].stations.find_all{|x| x.name == @stations[station-1].name}.empty?
       pos = gets.chomp.to_i
       if pos == 0
         @routes[route-1].add_station(@stations[station - 1])
@@ -155,9 +157,17 @@ class Interface
     puts "Если вы хотите удалить станцию из маршрута введите 1 и 2 если добавить"
     action = gets.chomp.to_i
     if action == 1
-      delete_station_from_route
+      begin
+      delete_station_from_route(route)
+      rescue StandardError =>e
+        puts e.message
+      end
     elsif action == 2
-      add_station_in_route
+      begin
+      add_station_in_route(route)
+      rescue StandardError =>e
+        puts e.message
+      end
     end
   end
 
@@ -190,8 +200,7 @@ class Interface
     puts "Введите порядковый номер маршрута в списке"
     print_routes
     route = gets.chomp.to_i
-    raise "Неверно задана пара поезд - маршрут. Попробуйте еще раз." if (bad_number?(train,@trains)||
-      bad_number?(route,@routes))
+    raise "Неверно задана пара поезд - маршрут. Попробуйте еще раз." if (bad_number?(train,@trains)||bad_number?(route,@routes))
       @trains[train-1].take_route(@routes[route-1])
     end
 
@@ -285,12 +294,11 @@ class Interface
         route_manage
       when "4"
         begin
-        raise puts "Невозможно назначить маршрут поезду. создайте хотябы один поезд и один маршрут" if @routes.empty? || @trains.empty?
+        raise "Невозможно назначить маршрут поезду. создайте хотябы один поезд и один маршрут" if @routes.empty? || @trains.empty?
         give_route
         rescue StandardError => e
           puts e.message
-          retry
-        end
+          end
       when "5"
         begin
         add_cars_to_train
