@@ -76,12 +76,15 @@ class Interface
   end
 
   def new_station
+    begin
     puts "Введите название станции"
     name = gets.chomp
     @stations.push(Station.new("#{name}"))
-  rescue StandardError => e
-    puts e.message
-    retry
+    rescue StandardError => e
+      puts e.message
+      retry
+    end
+    puts "Создана станция #{name}"
   end
 
   def is_here?(train,station)
@@ -124,6 +127,7 @@ class Interface
     raise e.message
     end
     @routes.push(Route.new(@stations[first-1],@stations[second-1]))
+    puts "Создан маршрут  #{@routes.last.first_station.name} - #{@routes.last.last_station.name}"
   end
 
   def delete_station_from_route(route)
@@ -162,12 +166,14 @@ class Interface
       rescue StandardError =>e
         puts e.message
       end
+      puts "Станция удалена из маршрута"
     elsif action == 2
       begin
       add_station_in_route(route)
       rescue StandardError =>e
         puts e.message
       end
+      puts "Станция добавлена в маршрут"
     end
   end
 
@@ -225,6 +231,7 @@ class Interface
     raise "Не назначен маршрут, мой капитан!" if train.route.nil?
     raise "Это конечная, назначьте новый маршрут" if train.route.stations.length <= train.current_station_index+1
       train.next_station
+    puts "Поезд прибыл на след8ующую станцию"
   end
 
   def list_trains
@@ -244,6 +251,7 @@ class Interface
     raise "Не назначен маршрут, мой капитан!" if train.route.nil?
     raise "Ни шагу назад, это первая станция маршрута!" if train.current_station_index == 0
       train.prev_station
+    puts "Поезд вернулся на одну станциюы"
   end
 
   def start_moving
@@ -298,19 +306,22 @@ class Interface
         give_route
         rescue StandardError => e
           puts e.message
-          end
+        end
+        puts "Маршрут назначен"
       when "5"
         begin
         add_cars_to_train
         rescue StandardError => e
           puts e.message
         end
+        puts "Вагон добавлен"
       when "6"
         begin
         pop_cars_from_train
         rescue StandardError => e
           puts e.message
         end
+        puts "Вагон отцеплен"
       when "7"
         begin
         start_moving
