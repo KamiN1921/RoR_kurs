@@ -92,6 +92,7 @@ class Interface
   end
 
   def new_train
+    begin
     puts "Введите номер поезда (в формате ХХХ-ХХ или ХХХХХ, где Х - буква или цифра)"
     name = gets.chomp.to_str
     puts "Укажите необходимый тип поезда ('грузовой' или 'пассажирский')"
@@ -102,10 +103,9 @@ class Interface
       @trains.push(CargoTrain.new(name,count))
     elsif type == "пассажирский"
       @trains.push(PassengerTrain.new(name,count))
-    else raise "Неверный тип"
+    else raise "Неверный тип поезда/данных"
     end
-    begin
-    rescue StandardError => e
+    rescue RuntimeError => e
       puts e.message
       retry
     rescue NoMethodError
@@ -208,7 +208,7 @@ class Interface
     route = gets.chomp.to_i
     raise "Неверно задана пара поезд - маршрут. Попробуйте еще раз." if (bad_number?(train,@trains)||bad_number?(route,@routes))
       @trains[train-1].take_route(@routes[route-1])
-    end
+  end
 
   def add_cars_to_train
     raise "Создайте хоть один поезд" if @trains.empty?
@@ -231,7 +231,7 @@ class Interface
     raise "Не назначен маршрут, мой капитан!" if train.route.nil?
     raise "Это конечная, назначьте новый маршрут" if train.route.stations.length <= train.current_station_index+1
       train.next_station
-    puts "Поезд прибыл на след8ующую станцию"
+    puts "Поезд прибыл на следующую станцию"
   end
 
   def list_trains
@@ -306,22 +306,25 @@ class Interface
         give_route
         rescue StandardError => e
           puts e.message
-        end
+        else
         puts "Маршрут назначен"
+        end
       when "5"
         begin
         add_cars_to_train
         rescue StandardError => e
           puts e.message
-        end
+        else
         puts "Вагон добавлен"
+        end
       when "6"
         begin
         pop_cars_from_train
         rescue StandardError => e
           puts e.message
-        end
+        else
         puts "Вагон отцеплен"
+        end
       when "7"
         begin
         start_moving
