@@ -41,37 +41,51 @@ class Interface
     end
   end
 
-  def demonstration
-    puts"Введите название компании производителя для поезда"
-    company = gets.chomp.to_str
-    puts "Введите номер поезда, которому хотите добавить производителя"
-    number = gets.chomp
-    train = Train.find(number)
-    unless train.nil?
-      train.company = company
-      puts "Поезду номер #{train.number} установлен производитель #{train.company}"
-    end
+  #def demonstration
+  # puts"Введите название компании производителя для поезда"
+  #  company = gets.chomp.to_str
+  #  puts "Введите номер поезда, которому хотите добавить производителя"
+  #  number = gets.chomp
+  #  train = Train.find(number)
+  # unless train.nil?
+  #    train.company = company
+  #    puts "Поезду номер #{train.number} установлен производитель #{train.company}"
 
-    puts "Количество созданных грузовых поездов - #{CargoTrain.instances}"
+  #   train.each_train_car{|x| puts x.free_space unless x.nil?}
+  #  end
+
+  # puts "Количество созданных грузовых поездов - #{CargoTrain.instances}"
+
+  # @stations[0].each_train{|x| puts x.number unless x.nil?} unless @stations.empty?
+  #end
+
+  def print_cars(train)
+    if train.type ==="грузовой"
+    train.each_train_car {|car| puts "Вагон #{car.type} номер #{car.number} свободного места #{car.free_space} из #{car.space}"}
+    elsif train.type === "пассажирский"
+    train.each_train_car {|car| puts "Вагон #{car.type} номер #{car.number} свободного места #{car.free_space} из #{car.seats}"}
+    else
+    raise "Неверный тип"
+    end
+  end
+
+  def print_train_cars(train)
+    puts "#{train.type} поезд номер #{ train.number } количество вагонов #{train.count_of_cars}"
+    puts "Вагоны данного поезда"
+    print_cars(train)
   end
 
   def print_station_trains(station,type)
     case type
       when "cargo"
         puts "Грузовые поезда станции #{@stations[station-1].name}"
-        @stations[station - 1].get_trains_by_type("cargo").each do |train|
-          puts "#{train.TYPE} поезд номер #{ train.number }"
-        end
+        @stations[station - 1].get_trains_by_type("cargo").each { |train| print_train_cars(train)}
       when "passenger"
         puts "Пассажирские поезда станции #{@stations[station-1].name}"
-        @stations[station - 1].get_trains_by_type("passenger").each do |train|
-          puts "#{train.TYPE} поезд номер #{ train.number }"
-        end
+        @stations[station - 1].get_trains_by_type("passenger").each { |train| print_train_cars(train)}
       else
         puts "Все поезда станции #{@stations[station-1].name}"
-        @stations[station - 1].trains.each do |train|
-          puts "#{train.TYPE} поезд номер #{ train.number }"
-        end
+        @stations[station - 1].each_train { |train| print_train_cars(train)}
     end
   end
 
@@ -100,9 +114,21 @@ class Interface
     puts "Укажите количество вагонов"
     count = gets.chomp.to_i
     if type == "грузовой"
-      @trains.push(CargoTrain.new(name,count))
+      block = Proc.new{
+                puts "Введите количество места в вагоне"
+                count_of_space = gets.chomp.to_i
+                count_of_space
+      }
+
+      @trains.push(CargoTrain.new(name,count, &block))
     elsif type == "пассажирский"
-      @trains.push(PassengerTrain.new(name,count))
+      block = Proc.new{
+                puts "Введите количество сидячих мест в вагоне"
+                count_of_seats = gets.chomp.to_i
+                count_of_seats
+      }
+
+      @trains.push(PassengerTrain.new(name,count, &block))
     else raise "Неверный тип поезда/данных"
     end
     rescue RuntimeError => e
@@ -112,7 +138,7 @@ class Interface
       puts "Неизвестная ошибка, объект не создан"
       retry
     end
-    puts "Создан #{@trains.last.TYPE} поезд номер #{@trains.last.number} #{@trains.last.count_of_cars} вагонов"
+    puts "Создан #{@trains.last.type} поезд номер #{@trains.last.number} #{@trains.last.count_of_cars} вагонов"
   end
 
   def new_route
@@ -285,8 +311,43 @@ class Interface
     puts " - Для отцепления вагона от поезда введите 6"
     puts " - Для начала перемещения по маршруту нажмите 7"
     puts " - Для начала просмотра списка поездов на станции нажмите 8"
-    puts " - Для демонстрации работы модулей введите 9"
-    puts " - Exit 10"
+    puts " - Занять место в поезде 9"
+    puts " - Посмотреть список вагонов поезда 10"
+    puts " - Exit 11"
+  end
+
+  def list_cars
+    print_trains
+    puts "Введите номер поезда, вагоны которого хотите посмотреть"
+    number = gets.chomp.to_str
+    train = Train.find(number)
+    raise "Поезд отсутствует" if train.nil?
+    print_cars(train)
+  end
+
+  def take_place
+    print_trains
+    puts "Введите номер поезда, в котором хотите занять место"
+    number = gets.chomp.to_str
+    train = Train.find(number)
+    raise "Поезд отсутствует" if train.nil?
+    puts "Введите номер вагона, в котором хотите занять место"
+    train_car = gets.chomp.to_i
+    raise "В этом поезде нет такого вагона" unless train.count_of_cars >= train_car && train.count_of_cars>0 && train_car > 0
+    if train.is_a? PassengerTrain
+      train.each_train_car{ |car| car.take_seat if car.number == train_car }
+    else
+      begin
+      puts "Введите объем груза"
+      v = gets.chomp.to_i
+      raise "Груз должен занимать какой-то положительный объем" unless v > 0
+      train.each_train_car{ |car| car.take_space(v) if car.number == train_car }
+      rescue StandardError => e
+      puts e.message
+      retry
+      end
+    end
+    puts "Место занято"
   end
 
   def menu
@@ -338,8 +399,18 @@ class Interface
           puts e.message
         end
       when "9"
-        demonstration
+        begin
+        take_place
+        rescue StandardError => e
+        puts e.message
+        end
       when "10"
+        begin
+          list_cars
+        rescue StandardError => e
+          puts e.message
+        end
+      when "11"
         break
       else puts "Неверная комманда"
       end

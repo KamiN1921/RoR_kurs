@@ -9,6 +9,10 @@ class Station
     !name.nil?
   end
 
+  def each_train(&block)
+    @trains.each { |train| block.call(train)}
+  end
+
   def initialize(name)
     @trains=[]
     @name = name

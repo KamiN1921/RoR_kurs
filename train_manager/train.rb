@@ -19,6 +19,10 @@ class Train
     @@all_trains.find{|train| train.number == number}
   end
 
+  def each_train_car(&block)
+    @cars.each { |car| block.call(car)}
+  end
+
   def count_of_cars
     @cars.length
   end
@@ -51,17 +55,18 @@ class Train
 
   protected #все методы будут унаследованы для дочерних классов, но работать напрямую с ними мы не будем
 
-  def add_train_car
+  def add_train_car(spaceincar)
   end
 
-  def initialize(number,count_of_cars) #  внутренний механизм
+  def initialize(number,count_of_cars, &block) #  внутренний механизм
     @current_station_index = -1
     @number = number.to_s
     @velocity = 0
     @cars = []
     register_instance
     while @cars.length<count_of_cars
-      add_train_car
+      space = block.call
+      add_train_car(space)
     end
     begin
     valid?

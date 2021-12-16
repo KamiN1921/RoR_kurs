@@ -1,8 +1,13 @@
 class PassengerTrain < Train
   include InstanceCounter
-  TYPE = 'пассажирский'
-  def add_train_car
-    @cars.push(PassengerTrainCar.new) if stopped?
+  TYPE = "пассажирский"
+
+  def type
+    TYPE
+  end
+
+  def add_train_car(seats)
+    @cars.push(PassengerTrainCar.new(seats)) if stopped?
   end
 
 end
