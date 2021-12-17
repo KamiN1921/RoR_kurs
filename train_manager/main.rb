@@ -60,10 +60,8 @@ class Interface
   #end
 
   def print_cars(train)
-    if train.type ==="грузовой"
+    if train.type ==="грузовой" || train.type ==="пассажирский"
     train.each_train_car {|car| puts "Вагон #{car.type} номер #{car.number} свободного места #{car.free_space} из #{car.space}"}
-    elsif train.type === "пассажирский"
-    train.each_train_car {|car| puts "Вагон #{car.type} номер #{car.number} свободного места #{car.free_space} из #{car.seats}"}
     else
     raise "Неверный тип"
     end

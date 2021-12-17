@@ -11,10 +11,8 @@ class PassengerTrainCar<TrainCar
 
   protected
 
-  def initialize(count_of_seats)
+  def initialize(space)
     super
-    @space = count_of_seats
-    @taken_space = 0
     @number = self.class.instances
   end
 

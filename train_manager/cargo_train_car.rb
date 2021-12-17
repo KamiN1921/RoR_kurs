@@ -13,8 +13,6 @@ class CargoTrainCar<TrainCar
 
   def initialize(space)
     super
-    @space = space
-    @taken_space = 0
     @number = self.class.instances
   end
 

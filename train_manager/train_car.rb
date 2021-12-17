@@ -17,8 +17,10 @@ class TrainCar
 
   protected
 
-  def initialize(x)
+  def initialize(space)
     register_instance
+    @space = space
+    @taken_space = 0
   end
 
 end
