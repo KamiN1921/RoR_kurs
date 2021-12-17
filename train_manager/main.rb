@@ -234,6 +234,7 @@ class Interface
       @trains[train-1].take_route(@routes[route-1])
   end
 
+
   def add_cars_to_train
     raise "Создайте хоть один поезд" if @trains.empty?
     puts "Введите порядковый номер поезда"

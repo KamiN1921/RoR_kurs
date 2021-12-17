@@ -10,7 +10,6 @@ class TrainCar
     self.TYPE
   end
 
-
   def free_space
     @space - @taken_space
   end

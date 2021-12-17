@@ -9,6 +9,7 @@ class PassengerTrainCar<TrainCar
     @taken_space+=1
   end
 
+
   protected
 
   def initialize(space)
