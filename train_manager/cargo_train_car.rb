@@ -1,5 +1,6 @@
 class CargoTrainCar<TrainCar
   include InstanceCounter
+  attr_reader :TYPE
 
   TYPE = "грузовой"
 
@@ -16,6 +17,5 @@ class CargoTrainCar<TrainCar
     @taken_space = 0
     @number = self.class.instances
   end
-
 
 end

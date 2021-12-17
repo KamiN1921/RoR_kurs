@@ -1,5 +1,6 @@
 class PassengerTrainCar<TrainCar
   include InstanceCounter
+  attr_reader :TYPE
 
   TYPE = "пассажирский"
 
