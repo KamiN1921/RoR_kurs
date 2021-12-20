@@ -1,10 +1,10 @@
+# frozen_string_literal: true
+
 class TrainCar
   include InstanceCounter
   include Manufacturer
 
-  attr_reader :number
-  attr_reader :taken_space
-  attr_reader :space
+  attr_reader :number, :taken_space, :space
 
   def type
     self.TYPE
@@ -21,5 +21,4 @@ class TrainCar
     @space = space
     @taken_space = 0
   end
-
 end

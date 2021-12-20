@@ -1,14 +1,16 @@
-class PassengerTrainCar<TrainCar
+# frozen_string_literal: true
+
+class PassengerTrainCar < TrainCar
   include InstanceCounter
   attr_reader :TYPE
 
-  TYPE = "пассажирский"
+  TYPE = 'пассажирский'
 
   def take_seat
-    raise "Недостаточно места" unless free_space > 0
-    @taken_space+=1
-  end
+    raise 'Недостаточно места' unless free_space.positive?
 
+    @taken_space += 1
+  end
 
   protected
 
@@ -16,5 +18,4 @@ class PassengerTrainCar<TrainCar
     super
     @number = self.class.instances
   end
-
 end

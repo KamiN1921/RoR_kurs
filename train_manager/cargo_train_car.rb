@@ -1,14 +1,16 @@
-class CargoTrainCar<TrainCar
+# frozen_string_literal: true
+
+class CargoTrainCar < TrainCar
   include InstanceCounter
   attr_reader :TYPE
 
-  TYPE = "грузовой"
+  TYPE = 'грузовой'
 
-  def take_space(v)
-    raise "Недостаточно места" if free_space < v
-    @taken_space +=v
+  def take_space(value)
+    raise 'Недостаточно места' if free_space < value
+
+    @taken_space += value
   end
-
 
   protected
 
@@ -16,5 +18,4 @@ class CargoTrainCar<TrainCar
     super
     @number = self.class.instances
   end
-
 end

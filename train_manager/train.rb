@@ -1,87 +1,94 @@
+# frozen_string_literal: true
+
 class Train
   include Manufacturer
 
-  attr_reader :number
-  attr_reader :TYPE
-  attr_reader :velocity
-  attr_reader :route
-  attr_reader :current_station_index
+  attr_reader :number, :TYPE, :velocity, :route, :current_station_index
+
   @@all_trains = []
-  NUMBER_REGEX = /^(([\d]|[a-zA-Z]|[а-яА-Я]){3}-?([\d]|[a-zA-Z]|[а-яА-Я]){2})$/
+  NUMBER_REGEX = /^((\d|[a-zA-Z]|[а-яА-Я]){3}-?(\d|[a-zA-Z]|[а-яА-Я]){2})$/.freeze
 
   def valid?
-    raise "Некорректно введен номер" unless number =~ NUMBER_REGEX
-    raise "Неустановлено количество вагонов поезда" if @cars.length<1
+    raise 'Некорректно введен номер' unless number =~ NUMBER_REGEX
+    raise 'Неустановлено количество вагонов поезда' if @cars.empty?
+
     true
   end
 
   def self.find(number)
-    @@all_trains.find{|train| train.number == number}
+    @@all_trains.find { |train| train.number == number }
   end
 
   def each_train_car(&block)
-    @cars.each { |car| block.call(car)}
+    @cars.each { |car| block.call(car) }
   end
 
   def count_of_cars
     @cars.length
   end
 
-  def pop_train_car #будет вызываться напрямую
+  # будет вызываться напрямую
+  def pop_train_car
     @cars.pop unless @cars.empty?
   end
 
-  def take_route(route) #внешний интерфейс, будет использоваться пользователями
+  # внешний интерфейс, будет использоваться пользователями
+  def take_route(route)
     @route = route
     @route.stations.first.train_arrival(self)
     @current_station_index = 0
   end
 
-  def next_station #внешний интерфейс, будет использоваться пользователями
+  # внешний интерфейс, будет использоваться пользователями
+  def next_station
     @route.stations[@current_station_index].train_departure(@number)
-    @current_station_index+=1
+    @current_station_index += 1
     @route.stations[@current_station_index].train_arrival(self)
   end
 
-  def prev_station #внешний интерфейс, будет использоваться пользователями
+  # внешний интерфейс, будет использоваться пользователями
+  def prev_station
     @route.stations[@current_station_index].train_departure(@number)
-    @current_station_index-=1
+    @current_station_index -= 1
     @route.stations[@current_station_index].train_arrival(self)
   end
 
-  def stopped? #внешний интерфейс, будет использоваться пользователями
-    @velocity==0
+  # внешний интерфейс, будет использоваться пользователями
+  def stopped?
+    @velocity.zero?
   end
 
-  protected #все методы будут унаследованы для дочерних классов, но работать напрямую с ними мы не будем
+  protected # все методы будут унаследованы для дочерних классов, но работать напрямую с ними мы не будем
 
-  def add_train_car(spaceincar)
-  end
+  def add_train_car(spaceincar); end
 
-  def initialize(number,count_of_cars, &block) #  внутренний механизм
+  #  внутренний механизм
+  def initialize(number, count_of_cars, &block)
     @current_station_index = -1
     @number = number.to_s
     @velocity = 0
     @cars = []
     register_instance
-    while @cars.length<count_of_cars
+    while @cars.length < count_of_cars
       space = block.call
       add_train_car(space)
     end
     begin
-    valid?
-    rescue StandardError=>e
+      valid?
+    rescue StandardError => e
       raise "Некорректно заданый объект: #{e.message}"
     else
-    @@all_trains<<self
+      @@all_trains << self
     end
   end
 
-  def accelerate(speed) #будет использоаться в дочернем классе
-    @velocity+=speed
+  # будет использоаться в дочернем классе
+  def accelerate(speed)
+    @velocity += speed
   end
 
-  def stop # будет использоаться в дочернем классе
+  # будет использоаться в дочернем классе
+  def stop
     @velocity = 0
   end
 end

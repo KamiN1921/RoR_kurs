@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 class CargoTrain < Train
   include InstanceCounter
-  TYPE = "грузовой"
+  TYPE = 'грузовой'
 
   def type
     TYPE
