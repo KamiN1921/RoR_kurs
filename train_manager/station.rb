@@ -3,12 +3,9 @@
 class Station
   attr_reader :name, :trains
 
+  include Validation
   include InstanceCounter
   @@all_stations = []
-
-  def valid?
-    !name.nil?
-  end
 
   def each_train(&block)
     @trains.each { |train| block.call(train) }
@@ -17,7 +14,9 @@ class Station
   def initialize(name)
     @trains = []
     @name = name
-    raise 'Неверное имя' unless valid?
+    self.class.validate name, 'presence'
+    self.class.validate name, 'format', /\A&\d|[a-z]|[а-я]/
+    validate!
 
     @@all_stations << self
   end

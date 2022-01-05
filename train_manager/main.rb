@@ -2,6 +2,8 @@
 
 $LOAD_PATH.push('/Users/dchaenkova/RubymineProjects/RoR_kurs/train_manager/')
 require 'instance_counter'
+require 'accessors'
+require 'validation'
 require 'manufacturer'
 require 'station'
 require 'route'
@@ -12,7 +14,10 @@ require 'passenger_train'
 require 'passenger_train_car'
 require 'cargo_train_car'
 
+
 class Interface
+  extend Accessors
+  attr_accessor_with_history :atr_demonstration
   def initialize
     @stations = []
     @routes = []
@@ -336,6 +341,7 @@ class Interface
     puts ' - Занять место в поезде 9'
     puts ' - Посмотреть список вагонов поезда 10'
     puts ' - Exit 11'
+    puts ' - Демонстрация accessors 12'
   end
 
   def list_cars
@@ -443,6 +449,11 @@ class Interface
         end
       when '11'
         break
+      when '12'
+        self.atr_demonstration="Первое значение"
+        self.atr_demonstration=3
+        puts self.atr_demonstration_history
+
       else puts 'Неверная комманда'
       end
     end

@@ -2,18 +2,12 @@
 
 class Train
   include Manufacturer
+  include Validation
 
   attr_reader :number, :TYPE, :velocity, :route, :current_station_index
 
   @@all_trains = []
   NUMBER_REGEX = /^((\d|[a-zA-Z]|[а-яА-Я]){3}-?(\d|[a-zA-Z]|[а-яА-Я]){2})$/.freeze
-
-  def valid?
-    raise 'Некорректно введен номер' unless number =~ NUMBER_REGEX
-    raise 'Неустановлено количество вагонов поезда' if @cars.empty?
-
-    true
-  end
 
   def self.find(number)
     @@all_trains.find { |train| train.number == number }
@@ -74,7 +68,9 @@ class Train
       add_train_car(space)
     end
     begin
-      valid?
+      self.class.validate number, 'presence'
+      self.class.validate number, 'format', NUMBER_REGEX
+      validate!
     rescue StandardError => e
       raise "Некорректно заданый объект: #{e.message}"
     else

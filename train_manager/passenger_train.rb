@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class PassengerTrain < Train
+  extend Accessors
   include InstanceCounter
   TYPE = 'пассажирский'
 

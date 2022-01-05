@@ -2,6 +2,7 @@
 
 class PassengerTrainCar < TrainCar
   include InstanceCounter
+  extend Accessors
   attr_reader :TYPE
 
   TYPE = 'пассажирский'
