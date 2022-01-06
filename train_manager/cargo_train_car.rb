@@ -2,7 +2,13 @@
 
 class CargoTrainCar < TrainCar
   include InstanceCounter
+  include Validation
   attr_reader :TYPE
+
+  def validateobj
+    self.class.validate @space, 'presence'
+    self.validate!
+  end
 
   TYPE = 'грузовой'
 
@@ -16,6 +22,7 @@ class CargoTrainCar < TrainCar
 
   def initialize(space)
     super
+    validateobj
     @number = self.class.instances
   end
 end

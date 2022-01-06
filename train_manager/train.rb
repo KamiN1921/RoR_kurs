@@ -7,8 +7,14 @@ class Train
   attr_reader :number, :TYPE, :velocity, :route, :current_station_index
 
   @@all_trains = []
-  NUMBER_REGEX = /^((\d|[a-zA-Z]|[а-яА-Я]){3}-?(\d|[a-zA-Z]|[а-яА-Я]){2})$/.freeze
 
+
+
+  def validateobj
+    self.class.validate @number, 'presence'
+    self.class.validate @number, 'format', /^((\d|[a-zA-Z]|[а-яА-Я]){3}-?(\d|[a-zA-Z]|[а-яА-Я]){2})$/
+    self.validate!
+  end
   def self.find(number)
     @@all_trains.find { |train| train.number == number }
   end
@@ -62,20 +68,13 @@ class Train
     @number = number.to_s
     @velocity = 0
     @cars = []
+    validateobj
     register_instance
     while @cars.length < count_of_cars
       space = block.call
       add_train_car(space)
     end
-    begin
-      self.class.validate number, 'presence'
-      self.class.validate number, 'format', NUMBER_REGEX
-      validate!
-    rescue StandardError => e
-      raise "Некорректно заданый объект: #{e.message}"
-    else
       @@all_trains << self
-    end
   end
 
   # будет использоаться в дочернем классе

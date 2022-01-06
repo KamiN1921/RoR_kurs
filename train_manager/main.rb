@@ -93,9 +93,9 @@ class Interface
   def new_station
     begin
       puts 'Введите название станции'
-      name = gets.chomp
-      @stations.push(Station.new(name.to_s))
-    rescue StandardError => e
+      name = gets.chomp.to_s
+      @stations.push(Station.new(name))
+    rescue RuntimeError => e
       puts e.message
       retry
     end
@@ -134,11 +134,11 @@ class Interface
       else
         raise 'Неверный тип поезда/данных'
       end
-    rescue RuntimeError => e
-      puts e.message
+    rescue RuntimeError
       retry
-    rescue NoMethodError
+    rescue NoMethodError => e
       puts 'Неизвестная ошибка, объект не создан'
+      puts e.message
       retry
     end
     puts "Создан #{@trains.last.type} поезд номер #{@trains.last.number} #{@trains.last.count_of_cars} вагонов"

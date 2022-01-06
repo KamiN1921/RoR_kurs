@@ -32,22 +32,19 @@ module Validation
 
     def validate_presence(var, _)
       if var == '' || var.nil?
-        puts "Имя #{var} не может быть пустой строкой или nil"
-        raise RuntimeError
+        raise RuntimeError, "Имя #{var} не может быть пустой строкой или nil"
       end
     end
 
     def validate_format(var, format)
       if var !~ format
-        puts 'Формат номера задан неверно!'
-        raise RuntimeError
+        raise RuntimeError, 'Формат номера задан неверно!'
       end
     end
 
     def validate_type(_var, type)
       if self.class != type
-        puts 'Классы объектов не совпадают'
-        raise RuntimeError
+        raise RuntimeError, 'Классы объектов не совпадают'
       end
     end
   end

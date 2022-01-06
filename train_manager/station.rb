@@ -7,6 +7,12 @@ class Station
   include InstanceCounter
   @@all_stations = []
 
+  def validateobj
+    self.class.validate @name, 'presence'
+    self.class.validate @name, 'format', /\A&\d|[a-z]|[а-я]/
+    self.validate!
+  end
+
   def each_train(&block)
     @trains.each { |train| block.call(train) }
   end
@@ -14,10 +20,7 @@ class Station
   def initialize(name)
     @trains = []
     @name = name
-    self.class.validate name, 'presence'
-    self.class.validate name, 'format', /\A&\d|[a-z]|[а-я]/
-    validate!
-
+    validateobj
     @@all_stations << self
   end
 
