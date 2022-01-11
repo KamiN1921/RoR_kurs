@@ -5,11 +5,7 @@ class PassengerTrainCar < TrainCar
   extend Accessors
   include Validation
   attr_reader :TYPE
-
-  def validateobj
-    self.class.validate @space, 'presence'
-    self.validate!
-  end
+  validate "@space", 'presence'
 
   TYPE = 'пассажирский'
 
@@ -23,7 +19,7 @@ class PassengerTrainCar < TrainCar
 
   def initialize(space)
     super
-    validateobj
+    validate!
     @number = self.class.instances
   end
 end

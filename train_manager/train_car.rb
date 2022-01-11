@@ -3,9 +3,9 @@
 class TrainCar
   include InstanceCounter
   include Manufacturer
+  include Validation
 
   attr_reader :number, :taken_space, :space
-
   def type
     self.TYPE
   end
@@ -20,5 +20,6 @@ class TrainCar
     register_instance
     @space = space
     @taken_space = 0
+    validate!
   end
 end

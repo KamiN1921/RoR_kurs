@@ -3,9 +3,15 @@
 class CargoTrain < Train
   include InstanceCounter
   TYPE = 'грузовой'
+  MESSAGE ='Введите количество грузового места'
+  validate "@number", 'presence'
+  validate "@number", 'format',/^((\d|[a-zA-Z]|[а-яА-Я]){3}-?(\d|[a-zA-Z]|[а-яА-Я]){2})$/
 
   def type
     TYPE
+  end
+  def mess
+    MESSAGE
   end
 
   def add_train_car(space)

@@ -4,17 +4,12 @@ class Train
   include Manufacturer
   include Validation
 
-  attr_reader :number, :TYPE, :velocity, :route, :current_station_index
+
+  attr_reader :number,:MESSAGE, :TYPE, :velocity, :route, :current_station_index
 
   @@all_trains = []
 
 
-
-  def validateobj
-    self.class.validate @number, 'presence'
-    self.class.validate @number, 'format', /^((\d|[a-zA-Z]|[а-яА-Я]){3}-?(\d|[a-zA-Z]|[а-яА-Я]){2})$/
-    self.validate!
-  end
   def self.find(number)
     @@all_trains.find { |train| train.number == number }
   end
@@ -63,18 +58,23 @@ class Train
   def add_train_car(spaceincar); end
 
   #  внутренний механизм
-  def initialize(number, count_of_cars, &block)
+  def initialize(number, count_of_cars)
     @current_station_index = -1
     @number = number.to_s
     @velocity = 0
     @cars = []
-    validateobj
+    validate!
     register_instance
+    feel_train(count_of_cars)
+    @@all_trains << self
+  end
+
+  def feel_train(count_of_cars)
     while @cars.length < count_of_cars
-      space = block.call
+      puts mess
+      space = gets.chomp.to_i
       add_train_car(space)
     end
-      @@all_trains << self
   end
 
   # будет использоаться в дочернем классе

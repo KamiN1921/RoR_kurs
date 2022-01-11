@@ -106,38 +106,38 @@ class Interface
     puts 'This station already has this train' unless station.trains.find(train.number)
   end
 
+  def get_number
+    puts 'Введите номер поезда (в формате ХХХ-ХХ или ХХХХХ, где Х - буква или цифра)'
+    gets.chomp.to_str
+  end
+
+  def get_type
+    puts "Укажите необходимый тип поезда ('грузовой' или 'пассажирский')"
+    gets.chomp
+  end
+
+  def get_count
+    puts 'Укажите количество вагонов'
+    count = gets.chomp.to_i
+    raise "Количество вагонов не может быть отрицательным" unless count >= 0
+    count
+  end
+
+
   def new_train
     begin
-      puts 'Введите номер поезда (в формате ХХХ-ХХ или ХХХХХ, где Х - буква или цифра)'
-      name = gets.chomp.to_str
-      puts "Укажите необходимый тип поезда ('грузовой' или 'пассажирский')"
-      type = gets.chomp
-      puts 'Укажите количество вагонов'
-      count = gets.chomp.to_i
+      number = get_number
+      type = get_type
+      count = get_count
       case type
       when 'грузовой'
-        block = proc do
-          puts 'Введите количество места в вагоне'
-          count_of_space = gets.chomp.to_i
-          count_of_space
-        end
-
-        @trains.push(CargoTrain.new(name, count, &block))
+        @trains.push(CargoTrain.new(number, count))
       when 'пассажирский'
-        block = proc do
-          puts 'Введите количество сидячих мест в вагоне'
-          count_of_seats = gets.chomp.to_i
-          count_of_seats
-        end
-
-        @trains.push(PassengerTrain.new(name, count, &block))
+        @trains.push(PassengerTrain.new(number, count))
       else
         raise 'Неверный тип поезда/данных'
       end
-    rescue RuntimeError
-      retry
-    rescue NoMethodError => e
-      puts 'Неизвестная ошибка, объект не создан'
+    rescue RuntimeError => e
       puts e.message
       retry
     end
