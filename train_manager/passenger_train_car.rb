@@ -5,7 +5,7 @@ class PassengerTrainCar < TrainCar
   extend Accessors
   include Validation
   attr_reader :TYPE
-  validate "@space", 'presence'
+  validate "@space", 'positive'
 
   TYPE = 'пассажирский'
 

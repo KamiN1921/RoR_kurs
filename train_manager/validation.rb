@@ -46,5 +46,12 @@ module Validation
         raise RuntimeError, 'Класс объекта не соотвествует заданному'
       end
     end
+
+    def validate_positive(var, _)
+      if self.instance_variable_get(var) < 0
+        raise RuntimeError, 'Должно быть больше 0'
+      end
+    end
+
   end
 end

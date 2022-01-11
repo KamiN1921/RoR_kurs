@@ -4,7 +4,7 @@ class CargoTrainCar < TrainCar
   include InstanceCounter
   include Validation
   attr_reader :TYPE
-  validate "@space", 'presence'
+  validate "@space", 'positive'
 
 
   TYPE = 'грузовой'
