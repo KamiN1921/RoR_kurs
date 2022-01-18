@@ -1,7 +1,7 @@
 #класс интерфейс, отвечающий за логику самой игры
 class Interface
   #игроки(пользователь + диллер) есть возможность позже добавить несколько игроков
-  @players = [] << Player.new("Diler",1)
+  @players = [] << Dealer.new
   #колода
   @deck = Deck.new
   @bank = 0
@@ -33,31 +33,36 @@ class Interface
   end
 
   # подсчет очков
-  # новая игра(сбор банка)
   def count_points
-    # code here
+    count = 0
+    @players.each{ |player| count += player.count}
+    count
   end
 
-  def bet
-    # code here
+  def bet(bet)
+    @players.each{ |player| @bank +=player.bet(bet)}
   end
 
   def have_three_card?
-    # code here
+    flag = true
+    @players.each {|player| flag = flag && player.have_three_cards? }
+    flag
   end
 
+  # определение победителя
   def who_win?
     # code here
   end
 
   def open_all
-    # code here
+    @players.each {|player| player.open_hand}
   end
 
+  # новая игра(сбор банка)
   def new_game
-    @players << Player.new(get_player_name,2)
+    @players << Player.new(get_player_name)
     get_start_hand
-    bet #сделать стандартную ставку
+    bet(20) #сделать стандартную ставку
 
     loop do
       show_cards
@@ -72,23 +77,63 @@ class Interface
 
   def get_start_hand
     @players.each do |player|
-      player.get_card(@deck)
-      player.get_card(@deck)
+      player.get_card(@deck.get_card)
+      player.get_card(@deck.get_card)
     end
   end
+  def menu
+    puts "Для выхода нажмите 1"
+    puts "Для вскрытия карт нажмите 2"
+    puts "Для пропуска хода нажмите 3"
+    puts "Для набора карт нажмите 4"
+  end
+
   # ход(сделать ход)
-  def make_move
+
+  def move(move,player)
+    case move
+    when "2"
+      open_all
+    when "3"
+
+    when "4"
+      if !player.have_three_cards?
+      player.get_card(@deck.get_card)
+      else raise "Слишком много карт"
+      end
+    else
+      raise "Неправильно выбрано действие"
+    end
 
   end
+
+  def make_move
+    begin
+      menu
+      @players.each do |player|
+        if player.class != Dealer
+        move = get_user_action
+        move(move,player)
+        else
+          player.dealers_decision(@deck.get_card)
+        end
+
+      end
+    rescue RuntimeError=>e
+      puts e.message
+      retry
+    end
+  end
+
   # запрос действия
   def get_user_action
-
+    puts "Выберите действие"
+    gets.chomp
   end
-  # вскрыть карты(если пользователь вскрывается, либо у одного из игроков 3 карты)
+
+  # отрисовать карты
   def show_cards
-
+    @players.each {|player| player.show_hand}
   end
-  # определение победителя
-
 end
 
