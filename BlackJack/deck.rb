@@ -6,30 +6,15 @@ class Deck
   #созжание колоды
   def initialize
     @cards = []
-    decks = "23456789TJQKA"
-    suits = "thdp" #+,<З ,<>, ^
-    decks.each_byte do |deck|
-      suits.each_byte do |suit|
-        @cards << deck.chr + suit.chr
+    decks = %w[2 3 4 5 6 7 8 9 10 T J Q K A]
+    suits = %w[+ <З <> ^]
+    decks.each do |deck|
+      suits.each do |suit|
+        @cards << [deck.chr, suit.chr]
       end
     end
-    replace_suits
     @cards.shuffle!.reverse!.shuffle!.reverse!.shuffle!
-  end
-
-  def replace_suits
-    @cards.values.each do
-      case self
-      when "t"
-        self = "+"
-      when "h"
-        self = "<3"
-      when "d"
-        self = "<>"
-      when "p"
-        self = "^"
-      end
-    end
+    @cards.map
   end
 
 end

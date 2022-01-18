@@ -1,25 +1,23 @@
-class Dealer
+# frozen_string_literal: true
 
+class Dealer < Player
   def initialize
-    @name = "Dealer"
+    super 'Dealer'
   end
 
   def show_hand
-    @hand.each {puts "*" }
+    puts "Диллер: "
+    @hand.each { puts '*' }
   end
 
   def open_hand
-    @hand.each do |x,y|
+    puts "Ваша рука: "
+    @hand.each do |x, y|
       puts "#{x}: #{y}"
     end
   end
 
   def dealers_decision(card)
-    if(@points<=17)
-      get_card(card)
-    end
+    get_card(card) if @points <= 17
   end
-
-
-
 end
