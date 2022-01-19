@@ -24,13 +24,20 @@ class Interface
     # 4 - new card
     # all - new game
     @player_decision = 5
-    @winner= 0
     @bank = 0
     @players = []
     @deck = Deck.new
     loop do
       new_game
       break unless retry_game?
+      break unless no_money?
+    end
+  end
+
+  def no_money?
+    @players.each do |player|
+      puts"#{player.name} имеет #{player.bank}"
+      return true if (player.bank <= 0)
     end
   end
 
@@ -58,7 +65,17 @@ class Interface
 
   # определение победителя
   def who_win?
-    # code here
+    @winner = 0
+    @players.each do |player|
+      @winner = player if player.points <= 21 && (@winner == 0 || player.points > @winner.points)
+    end
+    if @winner!= 0
+    puts "#{@winner.name} выиграл, у него #{@winner.points} очков"
+    @winner.bank+=@bank
+    else
+      puts "Деньги уходят казино"
+    end
+    @bank = 0
   end
 
   def open_all
@@ -66,24 +83,26 @@ class Interface
   end
 
   def show_points
+    puts "Ваши очки"
     @players.each do |player|
-
-      puts player.points unless player.class === Dealer
+      puts player.points unless player.class == Dealer
     end
   end
 
   # новая игра(сбор банка)
   def new_game
+    @players = []
     @players << Player.new(get_player_name) << Dealer.new
     get_start_hand
+    count_points
     bet(20) # сделать стандартную ставку
-
+    puts "Банк: #{@bank}"
     loop do
       show_cards
-      count_points
       show_points
       make_move
-      break if have_three_card? || (@players_decision == "4")
+      count_points
+      break if have_three_card? || (@players_decision == "4") || @players_decision == "1"
     end
 
     open_all
@@ -118,6 +137,7 @@ class Interface
       else
         raise 'Слишком много карт'
       end
+    when '4'
     else
       raise 'Неправильно выбрано действие'
     end

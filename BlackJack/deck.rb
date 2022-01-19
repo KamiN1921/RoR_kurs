@@ -6,7 +6,7 @@ class Deck
   #созжание колоды
   def initialize
     @cards = []
-    decks = %w[2 3 4 5 6 7 8 9 10 T J Q K A]
+    decks = %w[2 3 4 5 6 7 8 9 10 J Q K A]
     suits = %w[+ <З <> ^]
     decks.each do |deck|
       suits.each do |suit|

@@ -3,6 +3,8 @@
 class Player
   attr_accessor :hand
   attr_reader :points
+  attr_accessor :bank
+  attr_reader :name
 
   def initialize(name)
     @bank = 100
@@ -20,6 +22,7 @@ class Player
 
   # открыть карты
   def show_hand
+    puts "Ваша рука: "
     @hand.each do |x, y|
       puts "#{x}: #{y}"
     end
@@ -36,13 +39,16 @@ class Player
   end
 
   def have_three_cards?
-    @hand == 3
+    @hand.length == 3
   end
 
   def count_points
+    @points = 0
     @hand.each do |card|
       if card[0].to_i >2 && card[0].to_i <10
         @points +=  card[0].to_i
+      elsif card[0] =="T" && @hand.include?(card[0])
+        @points +=1
       else
         @points +=  10
       end

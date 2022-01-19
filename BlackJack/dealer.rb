@@ -11,7 +11,7 @@ class Dealer < Player
   end
 
   def open_hand
-    puts "Ваша рука: "
+    puts "Рука Диллера: "
     @hand.each do |x, y|
       puts "#{x}: #{y}"
     end
