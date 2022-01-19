@@ -91,6 +91,13 @@ class Interface
   end
 
   # новая игра(сбор банка)
+  def have_more_then_need?
+    @players.each do |player|
+      return true if player.points >=21
+    end
+    false
+  end
+
   def new_game
     @players = []
     @players << Player.new(get_player_name) << Dealer.new
@@ -104,7 +111,7 @@ class Interface
       make_move
       count_points
       puts " "
-      break if have_three_card? || (@players_decision == "4") || @players_decision == "1"
+      break if have_three_card? || (@players_decision == "4") || @players_decision == "1" || have_more_then_need?
     end
 
     open_all
