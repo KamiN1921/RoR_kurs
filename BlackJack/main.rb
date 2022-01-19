@@ -23,6 +23,7 @@ class Interface
     # 3 - skip
     # 4 - new card
     # all - new game
+    @can_pass_move = true
     @player_decision = 5
     @bank = 0
     @players = []
@@ -102,6 +103,7 @@ class Interface
       show_points
       make_move
       count_points
+      puts " "
       break if have_three_card? || (@players_decision == "4") || @players_decision == "1"
     end
 
@@ -118,8 +120,8 @@ class Interface
 
   def menu
     puts 'Для вскрытия карт нажмите 1'
-    puts 'Для пропуска хода нажмите 2'
-    puts 'Для набора карт нажмите 3'
+    puts 'Для пропуска хода нажмите 2' if @can_pass_move
+    puts 'Для набора карт нажмите 3' unless have_three_card?
     puts 'для прекращения игры нажмите 4'
   end
 
@@ -130,7 +132,7 @@ class Interface
     when '1'
       open_all
     when '2'
-
+      @can_pass_move = false
     when '3'
       if !player.have_three_cards?
         player.get_card(@deck.get_card)
