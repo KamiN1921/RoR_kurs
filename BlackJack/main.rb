@@ -71,8 +71,8 @@ class Interface
       @winner = player if player.points <= 21 && (@winner == 0 || player.points > @winner.points)
     end
     if @winner!= 0
-    puts "#{@winner.name} выиграл, у него #{@winner.points} очков"
-    @winner.bank+=@bank
+      puts "#{@winner.name} выиграл, у него #{@winner.points} очков"
+      @winner.bank+=@bank
     else
       puts "Деньги уходят казино"
     end
