@@ -15,6 +15,11 @@ class Player
     @name = name
   end
 
+  def new_game
+    @hand = []
+    @points = 0
+  end
+
   # взять карту
   def get_card(card)
     @hand << card
@@ -34,8 +39,9 @@ class Player
 
   # ставка
   def bet(bet)
-    @bank - bet
+    @bank -= bet
     bet
+
   end
 
   def have_three_cards?

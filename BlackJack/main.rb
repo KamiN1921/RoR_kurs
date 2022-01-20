@@ -23,12 +23,13 @@ class Interface
     # 3 - skip
     # 4 - new card
     # all - new game
-    @name = get_player_name
     @can_pass_move = true
     @player_decision = 5
     @bank = 0
     @players = []
     @deck = Deck.new
+    @players = []
+    @players << Player.new(get_player_name) << Dealer.new
     loop do
       new_game
       break unless retry_game?
@@ -69,7 +70,7 @@ class Interface
   def who_win?
     @winner = 0
     @players.each do |player|
-      @winner = player if player.points <= 21 && (@winner == 0 || player.points > @winner.points)
+      @winner= player if player.points <= 21 && (@winner == 0 || player.points > @winner.points)
     end
     if @winner!= 0
       puts "#{@winner.name} выиграл, у него #{@winner.points} очков"
@@ -99,10 +100,13 @@ class Interface
     false
   end
 
+  def state_to_zero
+    @players.each(&:new_game)
+  end
+
   def new_game
     @can_pass_move = true
-    @players = []
-    @players << Player.new(@name) << Dealer.new
+    state_to_zero
     get_start_hand
     count_points
     bet(20) # сделать стандартную ставку
