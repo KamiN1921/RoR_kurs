@@ -23,6 +23,7 @@ class Interface
     # 3 - skip
     # 4 - new card
     # all - new game
+    @name = get_player_name
     @can_pass_move = true
     @player_decision = 5
     @bank = 0
@@ -99,8 +100,9 @@ class Interface
   end
 
   def new_game
+    @can_pass_move = true
     @players = []
-    @players << Player.new(get_player_name) << Dealer.new
+    @players << Player.new(@name) << Dealer.new
     get_start_hand
     count_points
     bet(20) # сделать стандартную ставку
